@@ -30,7 +30,7 @@ export const signin = async (req, res, next) => {
         const {password : pass, ...rest} = user._doc
         res.cookie('token', token, { httpOnly: true, expires: new Date(Date.now() + 3600000) })
         .status(200)
-        .json({ message: 'Signin successful', rest, token });
+        .json({ message: 'Signin successful', user: rest, token });
     } catch (error) {
         next(error);
     }
@@ -45,7 +45,7 @@ export const google = async (req, res, next) => {
             const {password : pass, ...rest} = user._doc
             res.cookie('token', token, { httpOnly: true, expires: new Date(Date.now() + 3600000) })
             .status(200)
-            .json({ message: 'Google Signin successful', rest, token });
+            .json({ message: 'Google Signin successful', user: rest, token });
         }
         else{
             const generatedPassword = Math.random().toString(36).slice(-8)+ Math.random().toString(36).toUpperCase().slice(-8);
