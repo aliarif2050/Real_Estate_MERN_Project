@@ -4,9 +4,8 @@ import { persistStore } from 'redux-persist';
 import { store } from '../redux/store';
 import { useNavigate, Link } from 'react-router-dom';
 
-
-const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/dxq9uz7je/image/upload";
-const UPLOAD_PRESET = "unsigned_preset"; // Replace with your actual unsigned preset name
+const CLOUDINARY_URL = import.meta.env.VITE_CLOUDINARY_URL;
+const UPLOAD_PRESET = import.meta.env.VITE_UPLOAD_PRESET;
 
 const Profile = () => {
   const { user } = useSelector((state) => state.user);
