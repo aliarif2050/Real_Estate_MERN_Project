@@ -2,7 +2,8 @@ import React, { useState, useRef,  } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { persistStore } from 'redux-persist';
 import { store } from '../redux/store';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+
 
 const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/dxq9uz7je/image/upload";
 const UPLOAD_PRESET = "unsigned_preset"; // Replace with your actual unsigned preset name
@@ -205,6 +206,8 @@ const Profile = () => {
             {error && <p className="text-center text-red-500 mt-2">{error}</p>}
           </div>
         )}
+        <Link to={'/create-listing'} className="bg-green-700 text-white p-2 mt-1 rounded-lg uppercase 
+        text-center hover:opacity-95">Create Listing</Link>
         <div className="flex justify-between mt-4 text-red-600 cursor-pointer">
           <span onClick={handleDeleteClick}>Delete Account</span>
           <span className="text-blue-700 cursor-pointer" onClick={handleSignOut}>Sign out</span>
