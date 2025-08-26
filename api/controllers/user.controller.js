@@ -1,3 +1,4 @@
+import jwt from 'jsonwebtoken';
 import User from '../models/user.model.js';
 import bcryptjs from 'bcryptjs';
 
@@ -30,3 +31,48 @@ export const updateUserProfile = async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 }
+
+
+export const deleteUser = async (req, res) => {
+  if(req.user._id.toString() !== req.params.id){
+    return res.status(403).json({ success: false, message: 'You are not allowed to delete this account' });
+  }
+    try {
+        const userId = req.params.id;
+        const user = await User.findByIdAndDelete(userId);
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+    }
+    res.json({ success: true, message: 'User deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const verifyUser = async (req, res, next) => {
+  try {
+    const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
+    if (!token) {
+      return res.status(401).json({ success: false, message: 'No token provided' });
+    }
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+    req.user = user;
+    next();
+  } catch (error) {
+    return res.status(401).json({ success: false, message: 'Invalid or expired token' });
+  }
+};
+
+export const getUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+    res.json({ success: true, user });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};

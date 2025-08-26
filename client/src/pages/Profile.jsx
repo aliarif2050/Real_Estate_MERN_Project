@@ -1,5 +1,8 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef,  } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { persistStore } from 'redux-persist';
+import { store } from '../redux/store';
+import { useNavigate } from 'react-router-dom';
 
 const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/dxq9uz7je/image/upload";
 const UPLOAD_PRESET = "unsigned_preset"; // Replace with your actual unsigned preset name
@@ -7,6 +10,7 @@ const UPLOAD_PRESET = "unsigned_preset"; // Replace with your actual unsigned pr
 const Profile = () => {
   const { user } = useSelector((state) => state.user);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const fileRef = useRef(null);
   const [editForm, setEditForm] = useState(false);
   const [formState, setFormState] = useState({
@@ -89,6 +93,33 @@ const Profile = () => {
     }
   };
 
+  const handleSignOut = () => {
+    persistStore(store).purge(); // Clear persisted Redux state
+    dispatch({ type: "user/update", payload: { user: null } });
+    navigate('/sign-in');
+  };
+  const handleDeleteClick = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const res = await fetch(`/api/user/${user._id}`, {
+        method: 'DELETE',
+        credentials: 'include', // Ensure cookies (token) are sent
+      });
+      const data = await res.json();
+      if (data.success) {
+        dispatch({ type: "user/update", payload: { user: null } });
+        navigate('/sign-in');
+      } else {
+        throw new Error(data.message || "Failed to delete user");
+      }
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="p-3 max-w-lg mx-auto">
       <h1 className="text-3xl font-semibold text-center my-7">Profile</h1>
@@ -111,6 +142,7 @@ const Profile = () => {
 
         {!editForm ? (
           <>
+          <label className='text-slate-600' htmlFor="username">Username</label>
             <input
               id="username"
               name="username"
@@ -119,6 +151,7 @@ const Profile = () => {
               className="border p-3 rounded-lg my-2"
               disabled
             />
+            <label className='text-slate-600' htmlFor="email">Email</label>
             <input
               id="email"
               type="email"
@@ -132,6 +165,7 @@ const Profile = () => {
           </>
         ) : (
           <div className="flex flex-col mt-2">
+            <label className='text-slate-600' htmlFor="username">Username</label>
             <input
               id="username"
               name="username"
@@ -142,6 +176,7 @@ const Profile = () => {
               placeholder="New username"
               required
             />
+            <label className='text-slate-600' htmlFor="password">Password</label>
             <input
               id="password"
               name="password"
@@ -162,6 +197,10 @@ const Profile = () => {
             {error && <p className="text-center text-red-500 mt-2">{error}</p>}
           </div>
         )}
+        <div className="flex justify-between mt-4 text-red-600 cursor-pointer">
+          <span onClick={handleDeleteClick}>Delete Account</span>
+          <span className="text-blue-700 cursor-pointer" onClick={handleSignOut}>Sign out</span>
+        </div>
       </form>
     </div>
   );

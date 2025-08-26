@@ -2,6 +2,7 @@ import express from 'express'
 import mongoose from 'mongoose'
 import dotenv from 'dotenv'
 import cors from 'cors'
+import cookieParser from 'cookie-parser';
 import userRouter from './routes/user.route.js'
 import authRouter from './routes/auth.route.js'
 import uploadRoutes from "./routes/upload.route.js";
@@ -9,9 +10,10 @@ dotenv.config()
 const app = express()
 app.use(express.json())
 app.use(cors({
-  origin: 'http://localhost:5173',
-  credentials: true
+    origin: 'http://localhost:5173',
+    credentials: true
 }))
+app.use(cookieParser());
 mongoose.connect(process.env.MONGO).then(()=>{
     console.log("Cnnected to MongoDB")
 }).catch((err)=> console.log(err))
