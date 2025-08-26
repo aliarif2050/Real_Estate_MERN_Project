@@ -93,7 +93,15 @@ const Profile = () => {
     }
   };
 
-  const handleSignOut = () => {
+  const handleSignOut = async () => {
+    try {
+      await fetch('/api/auth/signout', {
+        method: 'POST',
+        credentials: 'include'
+      });
+    } catch (err) {
+      console.error("Signout error:", err);
+    }
     persistStore(store).purge(); // Clear persisted Redux state
     dispatch({ type: "user/update", payload: { user: null } });
     navigate('/sign-in');

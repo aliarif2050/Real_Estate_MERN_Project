@@ -1,3 +1,7 @@
+export const signout = (req, res) => {
+        res.clearCookie('token', { httpOnly: true, sameSite: 'lax', path: '/' });
+        return res.json({ success: true, message: 'Signout successful' });
+};
 import User from "../models/user.model.js";
 import jwt from 'jsonwebtoken'
 import bcryptjs from 'bcryptjs'
