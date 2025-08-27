@@ -1,5 +1,6 @@
 import React from 'react'
-
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 const CreateListing = () => {
   const [files, setFiles] = React.useState([]);
   const [error, setError] = React.useState("");
@@ -8,7 +9,8 @@ const CreateListing = () => {
   const [listingLoading, setListingLoading] = React.useState(false);
   const [offer, setOffer] = React.useState(false);
   const [type, setType] = React.useState(""); // "sale" or "rent"
-
+  const user = useSelector((state) => state.user.user);
+ const navigate = useNavigate();  
   const CloudinaryUrl = import.meta.env.VITE_CLOUDINARY_URL;
   const upload_preset = import.meta.env.VITE_UPLOAD_PRESET;
 
@@ -74,8 +76,12 @@ const CreateListing = () => {
 
     const form = e.target;
     const regularPrice = Number(form.regularPrice.value);
-    const discountPrice = offer ? Number(form.discountPrice.value) : null;
-
+    const discountPrice = offer ? Number(form.discountPrice.value) : 0;
+    if(imageUrls.length === 0) {
+      setError("Please upload at least one image");
+      setListingLoading(false);
+      return;
+    }
     // Validation
     if (offer && discountPrice >= regularPrice) {
       setError("Discount must be less than regular price");
@@ -96,10 +102,9 @@ const CreateListing = () => {
       regularPrice,
       discountPrice,
       imageUrls,
-      // Ideally userRef should come from logged-in user, not input
-      userRef: form.userRef.value
+      userRef: user._id
     };
-
+    console.log("Listing data to be submitted:", listingData);
     try {
       const res = await fetch("/api/listing/create", {
         method: "POST",
@@ -110,11 +115,12 @@ const CreateListing = () => {
       const data = await res.json();
       if (data.success) {
         console.log("Listing created:", data.listing);
+        navigate(`/listing/${data.listing._id}`);
       } else {
         console.error("Create listing error:", data.message);
       }
     } catch (err) {
-      console.error("Create listing error:", err);
+      console.error("Create listing error:", err.message);
     } finally {
       setListingLoading(false);
     }
@@ -157,15 +163,15 @@ const CreateListing = () => {
           {/* Numbers */}
           <div className="flex flex-wrap gap-6">
             <div className="flex items-center gap-2">
-              <input className="p-3 border border-gray-300 rounded-lg" type="number" id="bedrooms" min="1" max="10" required />
+              <input className="p-3 border border-gray-300 rounded-lg" type="number" id="bedrooms" min="1" max="10" defaultValue='0' required />
               <p>Beds</p>
             </div>
             <div className="flex items-center gap-2">
-              <input className="p-3 border border-gray-300 rounded-lg" type="number" id="bathrooms" min="1" max="10" required />
+              <input className="p-3 border border-gray-300 rounded-lg" type="number" id="bathrooms" min="1" max="10" defaultValue='0' required />
               <p>Baths</p>
             </div>
             <div className="flex items-center gap-2">
-              <input className="p-3 border border-gray-300 rounded-lg" type="number" id="regularPrice" min="1" required />
+              <input className="p-3 border border-gray-300 rounded-lg" type="number" id="regularPrice" min="1" defaultValue='0' required />
               <div className="flex flex-col items-center">
                 <p>Regular Price</p>
                 <span className="text-sm">(Rs/Month)</span>
@@ -173,19 +179,14 @@ const CreateListing = () => {
             </div>
             {offer && (
               <div className="flex items-center gap-2">
-                <input className="p-3 border border-gray-300 rounded-lg" type="number" id="discountPrice" min="1" required />
+                <input className="p-3 border border-gray-300 rounded-lg" type="number" id="discountPrice" min="0" defaultValue='0' required  />
                 <div className="flex flex-col items-center">
                   <p>Discount Price</p>
                   <span className="text-sm">(Rs/Month)</span>
                 </div>
               </div>
             )}
-            <div className="flex items-center gap-2">
-              <input className="p-3 border border-gray-300 rounded-lg" type="text" id="userRef" required />
-              <div className="flex flex-col items-center">
-                <p>User Reference</p>
-              </div>
-            </div>
+        
           </div>
         </div>
 
@@ -224,6 +225,7 @@ const CreateListing = () => {
                     type="button"
                     className="absolute top-1 right-1 bg-red-600 text-white rounded-full px-2 py-1 text-xs"
                     onClick={() => setImageUrls(prev => prev.filter((_, i) => i !== idx))}
+                    disabled={loading || listingLoading}
                   >
                     Delete
                   </button>

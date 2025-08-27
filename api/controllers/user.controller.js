@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 import User from '../models/user.model.js';
 import bcryptjs from 'bcryptjs';
+import Listing from '../models/listing.model.js';
 
 export const test = (req, res) => {
     res.json({ message: 'User route' })
@@ -75,5 +76,19 @@ export const getUser = async (req, res) => {
     res.json({ success: true, user });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const getUserListings = async (req, res , next) => {
+  if(req.user.id == req.params.id) {
+  try {
+    const userId = req.params.id;
+    const listings = await Listing.find({ userRef: userId });
+    res.status(200).json({ success: true, listings });
+  } catch (error) {
+    next(error)
+  }}
+  else {
+    res.status(403).json({ success: false, message: 'You are not allowed to view these listings' });
   }
 };
