@@ -147,7 +147,22 @@ const Profile = () => {
       setError(error.message);
     }
   }
-
+ const handleDeleteListing = async (listingId) => {
+  try {
+    const res = await fetch(`/api/listing/${listingId}`, {
+      method: 'DELETE',
+      credentials: 'include',
+    });
+    const data = await res.json();
+    if (data.success) {
+      setUserListings((prev) => prev.filter((listing) => listing._id !== listingId));
+    } else {
+      setError(data.message || "Failed to delete listing");
+    }
+  } catch (error) {
+    setError(error.message);
+  }
+ }
   return (
     <div className="p-3 max-w-lg mx-auto">
       <h1 className="text-3xl font-semibold text-center my-7">Profile</h1>
@@ -239,12 +254,12 @@ const Profile = () => {
                 <Link to={`/listing/${listing._id}`} className="text-blue-600 hover:underline">
                   <img src={listing.imageUrls[0]} alt={listing.name} className="w-16 h-16 object-contain " />
                 </Link>
-                <Link to={`/listing/${listing._id}`} className="text-slate-600 flex-1 truncate semi-bold hover:underline">
+                <Link to={`/listing/${listing._id}`} className="text-slate-800 flex-1 truncate semi-bold hover:underline">
                   <p >{listing.name}</p>
                 </Link>
                 <div className="flex flex-col items-center">
-                <button className="text-red-600 hover:underline cursor-pointer" onClick={() => handleDeleteListing(listing._id)}>Delete</button>
-                <button className="text-green-600 hover:underline cursor-pointer" onClick={() => handleEditListing(listing._id)}>Edit</button>
+                <button type="button" className="text-red-600 hover:underline cursor-pointer" onClick={() => handleDeleteListing(listing._id)}>Delete</button>
+                <button type="button" className="text-green-600 hover:underline cursor-pointer" onClick={() => handleEditListing(listing._id)}>Edit</button>
                 </div>
               </div>
             ))}
