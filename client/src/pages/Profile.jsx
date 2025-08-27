@@ -1,4 +1,4 @@
-import React, { useState, useRef,  } from "react";
+import React, { useState, useRef, } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { persistStore } from 'redux-persist';
 import { store } from '../redux/store';
@@ -20,6 +20,7 @@ const Profile = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [userListings, setUserListings] = useState([]);
 
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
@@ -127,6 +128,25 @@ const Profile = () => {
       setLoading(false);
     }
   };
+  const handleShowListings = async () => {
+    try {
+      setError("");
+      const res = await fetch(`/api/user/listing/${user._id}`, {
+        credentials: 'include' // <-- Added to send cookies/token
+      });
+      const data = await res.json();
+      if (data.success) {
+        setError("");
+        console.log(data.listings);
+        setUserListings(data.listings);
+        // Handle successful response
+      } else {
+        setError("Failed to fetch user listings");
+      }
+    } catch (error) {
+      setError(error.message);
+    }
+  }
 
   return (
     <div className="p-3 max-w-lg mx-auto">
@@ -150,7 +170,7 @@ const Profile = () => {
 
         {!editForm ? (
           <>
-          <label className='text-slate-600' htmlFor="username">Username</label>
+            <label className='text-slate-600' htmlFor="username">Username</label>
             <input
               id="username"
               name="username"
@@ -167,7 +187,7 @@ const Profile = () => {
               className="border p-3 rounded-lg my-2"
               disabled
             />
-            <button type="button" className="bg-blue-600 text-white p-2 rounded-lg mt-2" onClick={handleEditClick}>
+            <button type="button" className="bg-blue-600 text-white p-2 cursor-pointer rounded-lg mt-1.5" onClick={handleEditClick}>
               Edit Username/Password
             </button>
           </>
@@ -203,10 +223,33 @@ const Profile = () => {
               {loading ? "Saving..." : "Save Changes"}
             </button>
             {error && <p className="text-center text-red-500 mt-2">{error}</p>}
+            {!error && <p className="text-center text-green-500 mt-2">Profile updated successfully!</p>}
+
           </div>
         )}
-        <Link to={'/create-listing'} className="bg-green-700 text-white p-2 mt-1 rounded-lg uppercase 
-        text-center hover:opacity-95">Create Listing</Link>
+        <Link to={'/create-listing'} className="bg-green-700 text-white p-2 mt-1 rounded-lg uppercase text-center hover:opacity-95">Create Listing</Link>
+        <button type="button" onClick={handleShowListings} className="text-white p-2 cursor-pointer rounded-lg bg-green-700 mt-1 w-full">Show Listings</button>
+        {error && <p className="text-center text-red-500 mt-2">{error}</p>}
+        {userListings && userListings.length > 0 && (
+          <div className="">
+            <h1 className="text-center text-2xl text-gray-800 mt-2">Your Listings</h1>
+            <p>Total Listings: {userListings.length}</p>
+            {userListings.map(listing => (
+              <div key={listing._id} className="border gap-4 p-3 rounded-lg my-2 flex justify-between items-center">
+                <Link to={`/listing/${listing._id}`} className="text-blue-600 hover:underline">
+                  <img src={listing.imageUrls[0]} alt={listing.name} className="w-16 h-16 object-contain " />
+                </Link>
+                <Link to={`/listing/${listing._id}`} className="text-slate-600 flex-1 truncate semi-bold hover:underline">
+                  <p >{listing.name}</p>
+                </Link>
+                <div className="flex flex-col items-center">
+                <button className="text-red-600 hover:underline cursor-pointer" onClick={() => handleDeleteListing(listing._id)}>Delete</button>
+                <button className="text-green-600 hover:underline cursor-pointer" onClick={() => handleEditListing(listing._id)}>Edit</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
         <div className="flex justify-between mt-4 text-red-600 cursor-pointer">
           <span onClick={handleDeleteClick}>Delete Account</span>
           <span className="text-blue-700 cursor-pointer" onClick={handleSignOut}>Sign out</span>
