@@ -163,6 +163,7 @@ const Profile = () => {
     setError(error.message);
   }
  }
+ 
   return (
     <div className="p-3 max-w-lg mx-auto">
       <h1 className="text-3xl font-semibold text-center my-7">Profile</h1>
@@ -259,7 +260,7 @@ const Profile = () => {
                 </Link>
                 <div className="flex flex-col items-center">
                 <button type="button" className="text-red-600 hover:underline cursor-pointer" onClick={() => handleDeleteListing(listing._id)}>Delete</button>
-                <button type="button" className="text-green-600 hover:underline cursor-pointer" onClick={() => handleEditListing(listing._id)}>Edit</button>
+                <Link to={`/update-listing/${listing._id}`} className="text-green-600 hover:underline cursor-pointer">Edit</Link>
                 </div>
               </div>
             ))}

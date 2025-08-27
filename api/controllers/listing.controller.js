@@ -26,3 +26,33 @@ export const deleteListing = async (req, res, next) => {
         next(error);
     }
 };
+export const updateListing = async (req, res, next) => {
+    const listing = await Listing.findById(req.params.id);
+    if(!listing) {
+        return res.status(404).json({ success: false, message: "Listing not found" });
+    }
+    if(req.user.id !== listing.userRef) {
+        return res.status(403).json({ success: false, message: "You can only update your own listings" });
+    }
+
+    try {
+        const updatedListing = await Listing.findByIdAndUpdate(
+            req.params.id, req.body, { new: true }); 
+           
+
+        if (!updatedListing) {
+            return res.status(404).json({ success: false, message: "Listing not found" });
+        }
+
+        return res.status(200).json({ success: true, listing: updatedListing });
+    } catch (error) {
+        next(error);
+    }
+};
+ export const getListing = async (req, res, next) => {
+    const listing = await Listing.findById(req.params.id);
+    if (!listing) {
+        return res.status(404).json({ success: false, message: "Listing not found" });
+    }
+    return res.status(200).json({ success: true, listing });
+};
