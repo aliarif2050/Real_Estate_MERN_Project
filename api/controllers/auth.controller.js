@@ -68,3 +68,18 @@ export const google = async (req, res, next) => {
         next(error)
     }
 }
+export const check = async (req, res) => {
+  try {
+    const token = req.cookies.token; // token should be set as httpOnly cookie
+    if (!token) return res.json({ success: false });
+
+    // verify token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.id).select('-password');
+    if (!user) return res.json({ success: false });
+
+    res.json({ success: true, user });
+  } catch (err) {
+    res.json({ success: false });
+  }
+}

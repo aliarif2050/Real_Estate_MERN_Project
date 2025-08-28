@@ -8,6 +8,7 @@ const CLOUDINARY_URL = import.meta.env.VITE_CLOUDINARY_URL;
 const UPLOAD_PRESET = import.meta.env.VITE_UPLOAD_PRESET;
 
 const Profile = () => {
+  
   const { user } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -22,6 +23,10 @@ const Profile = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [userListings, setUserListings] = useState([]);
 
+  if (!user) {
+  navigate("/sign-in");
+  return null;
+}
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;

@@ -73,7 +73,8 @@ export const getUser = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
     if (!user) return res.status(404).json({ success: false, message: 'User not found' });
-    res.json({ success: true, user });
+    const { password, ...rest } = user._doc;
+    res.json({ success: true, user: rest });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -91,4 +92,15 @@ export const getUserListings = async (req, res , next) => {
   else {
     res.status(403).json({ success: false, message: 'You are not allowed to view these listings' });
   }
+};
+
+export const getUser1 = async (req, res , next) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+   const { password, ...rest } = user._doc;
+    res.json({ success: true, user: rest });
+  } catch (error) {
+      next(error);
+    }
 };
