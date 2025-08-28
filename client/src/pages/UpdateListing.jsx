@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import {useParams } from 'react-router-dom';
+import { useSelector ,} from 'react-redux';
+import {useNavigate, useParams } from 'react-router-dom';
 
 const UpdateListing = () => {
     const [files, setFiles] = React.useState([]);
@@ -12,7 +12,7 @@ const UpdateListing = () => {
     const [type, setType] = React.useState(""); // "sale" or "rent"
     const user = useSelector((state) => state.user.user);
     const [success, setSuccess] = React.useState(false);
-   
+    const navigate = useNavigate();
     const params = useParams();
 
     const CloudinaryUrl = import.meta.env.VITE_CLOUDINARY_URL;
@@ -152,7 +152,10 @@ const UpdateListing = () => {
                 setSuccess(true);
                 setTimeout(() => {
                     setSuccess(false);
-                }, 1000);
+                }, 2800);
+                setTimeout(() => {
+                    navigate(`/listing/${data.listing._id}`);
+                }, 3000);
             } else {
                 setSuccess(false);
                 setError(data.message || "Update listing error");
@@ -273,7 +276,7 @@ const UpdateListing = () => {
                     <button className="bg-blue-600 text-white cursor-pointer p-3 rounded-lg mt-4" disabled={listingLoading || loading}>
                         {listingLoading ? "Updating..." : "Update Listing"}
                     </button>
-                    {success && <p className='text-sm text-green-500 mt-2'>Listing updated successfully!</p>}
+                    {success && <p className='text-sm text-green-500 mt-2'>Listing updated successfully! <br /> <span className='text-gray-800 text-center text-2xl animate-pulse'>Redirecting to Listing</span></p>}
                 </div>
             </form>
         </main>
