@@ -5,7 +5,7 @@ import SwiperCore from 'swiper'
 import { Navigation } from 'swiper/modules'
 import 'swiper/css/bundle'
 import { useSelector } from 'react-redux';
-import { FaBed, FaMapMarkerAlt, FaBath, FaParking, FaChair } from 'react-icons/fa';
+import { FaBed, FaMapMarkerAlt, FaBath, FaParking, FaChair , FaShare} from 'react-icons/fa';
 import Contact from '../components/Contact';
 
 const Listing = () => {
@@ -16,6 +16,7 @@ const Listing = () => {
     const [loading, setLoading] = React.useState(true);
     const [error, setError] = React.useState(false);
     const user = useSelector((state) => state.user.user);
+    const [copied, setCopied] = React.useState(false);
     useEffect(() => {
         const fetchListing = async () => {
             try {
@@ -57,6 +58,25 @@ const Listing = () => {
                             <p className="text-center text-gray-500">No images available</p>
                         )}
                     </Swiper>
+                    <div className="fixed top-[13%] right-[3%] z-10 border rounded-full w-11 h-11 flex justify-center items-center bg-slate-100 cursor-pointer">
+                        <FaShare
+                            className="text-slate-500"
+                            onClick={() => {
+                                navigator.clipboard.writeText(
+                                    window.location.href
+                                );
+                                setCopied(true);
+                                setTimeout(() => {
+                                    setCopied(false);
+                                }, 2000);
+                            }}
+                        />
+                    </div>
+                    {copied && (
+                        <p className="fixed top-[23%] right-[5%] z-10 rounded-md bg-slate-100 p-2">
+                            Link copied!
+                        </p>
+                    )}
 
                     <div className='items-center p-3 max-w-4xl mx-auto'>
                         <div className='flex'>
