@@ -1,9 +1,10 @@
 import {useEffect, useState} from 'react'
 import { FaSleigh } from 'react-icons/fa';
 import { useLocation, useNavigate } from 'react-router-dom';
+import ListingItem from '../components/ListingItem';
 
 const Search = () => {
-    const [loadings, setLoadings] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [listings, setListings] = useState([]);
     console.log(listings)
     const location = useLocation();
@@ -39,16 +40,16 @@ const Search = () => {
             });
         }
         const fetchListings = async () => {
-            setLoadings(true);
+            setLoading(true);
             try {
                 const searchQuery = urlParams.toString();
                 const response = await fetch(`/api/listing/get?${searchQuery}`);
                 const data = await response.json();
                 setListings(data.listings || []);
-                setLoadings(false);
+                setLoading(false);
             } catch (error) {
                 console.error("Error fetching listings:", error);
-                setLoadings(false);
+                setLoading(false);
             }
             
         };
@@ -178,6 +179,15 @@ const handleSubmit = (e) => {
         </div>
         <div className='p-7 flex-1'>
             <h1 className='text-slate-700 text-2xl font-semibold border-b'>Search Results:</h1>
+        <div className='p-7 flex flex-wrap gap-6'>
+            {!loading && listings.length === 0 && 
+            <p className='text-red-500 text-xl'>No Listings found.</p>}
+            {loading && <p className='text-blue-500 text-lg items-center'>Loading...</p>}
+            {!loading && listings.length > 0 && listings.map(listing => (
+                <ListingItem key={listing._id} listing={listing} />
+            ))}
+           
+        </div>
         </div>
     </div>
   )
