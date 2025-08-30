@@ -7,9 +7,6 @@ import userRouter from './routes/user.route.js';
 import authRouter from './routes/auth.route.js';
 import uploadRoutes from './routes/upload.route.js';
 import listingRoutes from './routes/listing.route.js';
-import { connectToDatabase } from './db.js';
-await connectToDatabase(process.env.MONGO);
-
 dotenv.config();
 const app = express();
 
@@ -34,7 +31,9 @@ app.use((req, res, next) => {
 
 // MongoDB connection
 mongoose.connect(process.env.MONGO)
-  .then(() => console.log("Connected to MongoDB"))
+  .then(() => {console.log("Connected to MongoDB");
+      app.listen(3000, () => console.log('Server running on port 3000'))
+  })
   .catch(err => console.error("MongoDB connection error:", err));
 
 // Routes
