@@ -29,12 +29,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// MongoDB connection
-mongoose.connect(process.env.MONGO)
-  .then(() => {console.log("Connected to MongoDB");
-      app.listen(3000, () => console.log('Server running on port 3000'))
-  })
-  .catch(err => console.error("MongoDB connection error:", err));
 
 // Routes
 app.use('/api/user', userRouter);
@@ -43,7 +37,7 @@ app.use('/api', uploadRoutes);
 app.use('/api/listing', listingRoutes);
 
 // Health check
-app.get('/api/health', (req, res) => {
+app.get('/', (req, res) => {
   res.status(200).json({ message: 'API is working!', frontendUrl: process.env.FRONTEND_URL });
 });
 
@@ -53,11 +47,13 @@ app.use((err, req, res, next) => {
   const message = err.message || "Something went wrong";
   return res.status(statusCode).json({ success: false, statusCode, message });
 });
+// MongoDB connection
+mongoose.connect(process.env.MONGO)
+  .then(() => {console.log("Connected to MongoDB");
+      app.listen(3000, () => console.log('Server running on port 3000'))
+  })
+  .catch(err => console.error("MongoDB connection error:", err));
 
 // Export for Vercel
 export default app;
 
-// Start server locally if not in production
-if (process.env.NODE_ENV !== 'production') {
-  app.listen(3000, () => console.log('Server running on port 3000'));
-}
