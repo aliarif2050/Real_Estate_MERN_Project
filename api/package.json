@@ -5,8 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon index.js",
-    "start": "node  index.js",
-    "build": "echo 'Building the project...'"
+    "start": "node index.js",
+    "build": "echo 'Building API...'",
+    "vercel-build": "echo 'No build needed for Node.js API'"
   },
   "keywords": [],
   "author": "",
