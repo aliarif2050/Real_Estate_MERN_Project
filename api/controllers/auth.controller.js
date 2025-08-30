@@ -3,7 +3,8 @@ export const signout = (req, res) => {
         httpOnly: true, 
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'None',
-        path: '/' 
+        path: '/',
+        partitioned: true // <-- Added for cross-origin cookie support
     });
     return res.json({ success: true, message: 'Signout successful' });
 };
@@ -42,7 +43,8 @@ export const signin = async (req, res, next) => {
             httpOnly: true, 
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'None',
-            path: '/' 
+            path: '/',
+            partitioned: true // <-- Added for cross-origin cookie support
         })
         .status(200)
         .json({ message: 'Signin successful', user: rest, token });
@@ -62,7 +64,8 @@ export const google = async (req, res, next) => {
                 httpOnly: true, 
                 secure: process.env.NODE_ENV === 'production',
                 sameSite: 'None',
-                path: '/' 
+                path: '/',
+                partitioned: true // <-- Added for cross-origin cookie support
             })
             .status(200)
             .json({ message: 'Google Signin successful', user: rest, token });
@@ -83,7 +86,8 @@ export const google = async (req, res, next) => {
                 httpOnly: true, 
                 secure: process.env.NODE_ENV === 'production',
                 sameSite: 'None',
-                path: '/' 
+                path: '/',
+                partitioned: true // <-- Added for cross-origin cookie support
             })
             .status(201)
             .json({ message: 'User created successfully', user: rest });
