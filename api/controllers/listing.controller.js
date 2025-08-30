@@ -52,25 +52,24 @@ export const getAllListings = async (req, res, next) => {
     try {
         const limit = parseInt(req.query.limit) || 10;
         const startIndex = parseInt(req.query.startIndex) || 0;
+
         let offer = req.query.offer;
-        if(offer === 'false' || offer === undefined) {
-            offer = {$in: [false , true]};
-        }
+        if (offer === 'false' || offer === undefined) offer = { $in: [false, true] };
+
         let furnished = req.query.furnished;
-        if(furnished === 'false' || furnished === undefined) {
-            furnished = {$in: [false , true]};
-        }
+        if (furnished === 'false' || furnished === undefined) furnished = { $in: [false, true] };
+
         let parking = req.query.parking;
-        if(parking === 'false' || parking === undefined) {
-            parking = {$in: [false , true]};
-        }
+        if (parking === 'false' || parking === undefined) parking = { $in: [false, true] };
+
         let type = req.query.type;
-        if(type ===undefined|| type === 'all') {
-            type = {$in: ['sale','rent']};
-        }
+        if (!type || type === 'all') type = { $in: ['sale', 'rent'] };
+
         const searchTerm = req.query.searchTerm || '';
-        const sort = req.query.sort || 'createdAt';
-        const order = req.query.order || 'desc';
+
+        // Safe sort
+        const sortField = req.query.sort || 'createdAt';
+        const sortOrder = req.query.order === 'asc' ? 1 : -1;
 
         const listings = await Listing.find({
             name: { $regex: searchTerm, $options: 'i' },
@@ -79,11 +78,13 @@ export const getAllListings = async (req, res, next) => {
             parking,
             type,
         })
-            .sort( {[sort]: order})
+            .sort({ [sortField]: sortOrder })
             .limit(limit)
             .skip(startIndex);
+
         return res.status(200).json({ success: true, listings });
     } catch (error) {
+        console.error('Error in getAllListings:', error); // <-- log the error
         next(error);
     }
 };
