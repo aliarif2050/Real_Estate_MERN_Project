@@ -1,8 +1,7 @@
-
 import React from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { signInStart,signInFailure,signInSuccess } from '../redux/user/userSlice'
+import { signInStart, signInFailure, signInSuccess } from '../redux/user/userSlice'
 import OAuth from '../components/OAuth'
 
 const Signin = () => {
@@ -10,7 +9,8 @@ const Signin = () => {
   const [formData, setFormData] = React.useState({})
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const {loading, error} = useSelector((state) => state.user);
+  const { loading, error } = useSelector((state) => state.user);
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value })
   }
@@ -21,10 +21,9 @@ const Signin = () => {
       dispatch(signInStart())
       const res = await fetch(`${VITE_API_URL}/auth/signin`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+        credentials: 'include' // <-- added
       });
       const data = await res.json();
       if (data.success === false) {
@@ -33,7 +32,6 @@ const Signin = () => {
       }
       dispatch(signInSuccess(data));
       navigate('/');
-      console.log(data);
     } catch (err) {
       dispatch(signInFailure(err.message));
     }
@@ -43,7 +41,6 @@ const Signin = () => {
     <div className='p-3 max-w-lg mx-auto'>
       <h1 className='text-3xl text-center font-semibold my-7'>Sign In</h1>
       <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
-        
         <input
           type="email"
           id='email'
@@ -64,10 +61,10 @@ const Signin = () => {
         >
           {loading ? 'Loading...' : 'Sign In'}
         </button>
-          <OAuth />
+        <OAuth />
       </form>
-       <div className='flex gap-2 mt-5'>
-        <p>Donot have an account?</p>
+      <div className='flex gap-2 mt-5'>
+        <p>Don’t have an account?</p>
         <Link to="/sign-up">
           <span className='text-blue-700'>Sign Up</span>
         </Link>
