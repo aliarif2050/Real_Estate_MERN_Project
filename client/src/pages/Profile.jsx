@@ -42,6 +42,7 @@ const Profile = () => {
       const cloudRes = await fetch(CLOUDINARY_URL, {
         method: "POST",
         body: formData,
+
       });
       const cloudData = await cloudRes.json();
       if (!cloudData.secure_url) throw new Error("Cloudinary upload failed");
@@ -51,6 +52,7 @@ const Profile = () => {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ photo: cloudData.secure_url }),
+        credentials: "include"
       });
       const updateData = await updateRes.json();
       if (updateData.success) {
@@ -83,6 +85,7 @@ const Profile = () => {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username: formState.username, password: formState.password }),
+        credentials: "include"
       });
       const updateData = await updateRes.json();
       if (updateData.success) {

@@ -44,7 +44,12 @@ export const deleteUser = async (req, res) => {
     if (!user) {
       return res.status(404).json({ success: false, message: 'User not found' });
     }
-    res.clearCookie('token');
+   res.clearCookie('token', {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'None',
+            path: '/'
+        });
     return res.json({ success: true, message: 'User deleted successfully' });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });

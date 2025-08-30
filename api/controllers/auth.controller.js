@@ -1,85 +1,111 @@
 export const signout = (req, res) => {
-        res.clearCookie('token', { httpOnly: true, sameSite: 'lax', path: '/' });
-        return res.json({ success: true, message: 'Signout successful' });
+    res.clearCookie('token', { 
+        httpOnly: true, 
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'None',
+        path: '/' 
+    });
+    return res.json({ success: true, message: 'Signout successful' });
 };
+
 import User from "../models/user.model.js";
-import jwt from 'jsonwebtoken'
-import bcryptjs from 'bcryptjs'
+import jwt from 'jsonwebtoken';
+import bcryptjs from 'bcryptjs';
 import { errorHandler } from "../utils/error.js";
+
 export const signup = async (req, res, next) => {
     const { username, email, password } = req.body;
-    const hashedPassword =  bcryptjs.hashSync(password, 10);
+    const hashedPassword = bcryptjs.hashSync(password, 10);
     const newUser = new User({ username, email, password: hashedPassword });
     await newUser.save()
         .then(() => {
             res.status(201).json({ message: 'User created successfully', user: newUser });
         })
         .catch(err => {
-         next(err);
+            next(err);
         });
-        // helllob g
-}
+};
+
 export const signin = async (req, res, next) => {
-    const {email, password} = req.body;
+    const { email, password } = req.body;
     try {
         const user = await User.findOne({ email });
-        if (!user) {
-            return next(errorHandler(404,'User not found' ));
-        }
+        if (!user) return next(errorHandler(404,'User not found'));
+
         const isMatch = bcryptjs.compareSync(password, user.password);
-        if (!isMatch) {
-            return next(errorHandler(401,'Invalid password' ));
-        }
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
-    const {password : pass, ...rest} = user._doc
-    res.cookie('token', token, { httpOnly: true, sameSite: 'lax', path: '/' })
-    .status(200)
-    .json({ message: 'Signin successful', user: rest, token });
+        if (!isMatch) return next(errorHandler(401,'Invalid password'));
+
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+        const { password: pass, ...rest } = user._doc;
+
+        res.cookie('token', token, { 
+            httpOnly: true, 
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'None',
+            path: '/' 
+        })
+        .status(200)
+        .json({ message: 'Signin successful', user: rest, token });
+
     } catch (error) {
         next(error);
     }
-}
+};
 
 export const google = async (req, res, next) => {
     try {
-        const user = await User.findOne({email: req.body.email});
-        if(user)
-        {
+        const user = await User.findOne({ email: req.body.email });
+        if(user) {
             const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
-            const {password : pass, ...rest} = user._doc
-            res.cookie('token', token, { httpOnly: true, sameSite: 'lax', path: '/' })
+            const { password: pass, ...rest } = user._doc;
+            res.cookie('token', token, { 
+                httpOnly: true, 
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'None',
+                path: '/' 
+            })
             .status(200)
             .json({ message: 'Google Signin successful', user: rest, token });
-        }
-        else{
-            const generatedPassword = Math.random().toString(36).slice(-8)+ Math.random().toString(36).toUpperCase().slice(-8);
+        } else {
+            const generatedPassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).toUpperCase().slice(-8);
             const hashedPassword = bcryptjs.hashSync(generatedPassword, 10);
-            const newUser = new User({username: req.body.name.split(" ").join("").toLowerCase() + Math.random().toString(36).slice(-8),
-                 email: req.body.email, password: hashedPassword, photo: req.body.photo});
+            const newUser = new User({
+                username: req.body.name.split(" ").join("").toLowerCase() + Math.random().toString(36).slice(-8),
+                email: req.body.email,
+                password: hashedPassword,
+                photo: req.body.photo
+            });
             await newUser.save();
             const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET);
-            const {password : pass, ...rest} = newUser._doc
-            res.cookie('token', token, { httpOnly: true, sameSite: 'lax', path: '/' })
+            const { password: pass, ...rest } = newUser._doc;
+
+            res.cookie('token', token, { 
+                httpOnly: true, 
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'None',
+                path: '/' 
+            })
             .status(201)
             .json({ message: 'User created successfully', user: rest });
         }
 
     } catch (error) {
-        next(error)
+        next(error);
     }
-}
+};
+
 export const check = async (req, res) => {
-  try {
-    const token = req.cookies.token; // token should be set as httpOnly cookie
-    if (!token) return res.json({ success: false });
+    try {
+        const token = req.cookies.token; // token should be set as httpOnly cookie
+        if (!token) return res.json({ success: false });
 
-    // verify token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.id).select('-password');
-    if (!user) return res.json({ success: false });
+        // verify token
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const user = await User.findById(decoded.id).select('-password');
+        if (!user) return res.json({ success: false });
 
-    res.json({ success: true, user });
-  } catch (err) {
-    res.json({ success: false });
-  }
-}
+        res.json({ success: true, user });
+    } catch (err) {
+        res.json({ success: false });
+    }
+};
