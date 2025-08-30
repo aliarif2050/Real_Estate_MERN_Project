@@ -3,6 +3,7 @@ import {FaSearch} from 'react-icons/fa'
 import { useSelector } from 'react-redux'
 import { Link , useNavigate, useLocation } from 'react-router-dom'
 export const Header = () => {
+    const VITE_API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
     const [searchTerm, setSearchTerm] = React.useState("");
     const {user} = useSelector((state) => state.user);
     const navigate = useNavigate();

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 
 
 const Contact = ({ listing }) => {
+    const VITE_API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
     const [agent, setAgent] = React.useState(null);
     const [message, setMessage] = React.useState("");
     const onChangeMessage = (e) => {
@@ -11,7 +12,7 @@ const Contact = ({ listing }) => {
     React.useEffect(() => {
         const fetchAgent = async () => {
             try {
-                const response = await fetch(`/api/user/getUser/${listing.userRef}`);
+                const response = await fetch(`${VITE_API_URL}/user/getUser/${listing.userRef}`);
                 const data = await response.json();
                 if (data.success && data.user) {
                     setAgent(data.user);
@@ -21,6 +22,7 @@ const Contact = ({ listing }) => {
             }
         };
         fetchAgent();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [listing.userRef]);
 
     return (

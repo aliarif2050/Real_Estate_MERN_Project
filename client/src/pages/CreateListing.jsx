@@ -2,6 +2,7 @@ import React from 'react'
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 const CreateListing = () => {
+  const VITE_API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
   const [files, setFiles] = React.useState([]);
   const [error, setError] = React.useState("");
   const [imageUrls, setImageUrls] = React.useState([]);
@@ -106,7 +107,7 @@ const CreateListing = () => {
     };
     console.log("Listing data to be submitted:", listingData);
     try {
-      const res = await fetch("/api/listing/create", {
+      const res = await fetch(`${VITE_API_URL}/listing/create`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(listingData),

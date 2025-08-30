@@ -3,6 +3,7 @@ import { useSelector ,} from 'react-redux';
 import {useNavigate, useParams } from 'react-router-dom';
 
 const UpdateListing = () => {
+    const VITE_API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
     const [files, setFiles] = React.useState([]);
     const [error, setError] = React.useState("");
     const [imageUrls, setImageUrls] = React.useState([]);
@@ -21,7 +22,7 @@ const UpdateListing = () => {
     useEffect(() => {
         const fetchListing = async () => {
             const listingId = params.listingId;
-            const res = await fetch(`/api/listing/get/${listingId}`);
+            const res = await fetch(`${VITE_API_URL}/listing/get/${listingId}`);
             const data = await res.json();
             if (data.success) {
                 const listing = data.listing;
@@ -50,6 +51,7 @@ const UpdateListing = () => {
             }
         };
         fetchListing();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [params.listingId]);
 
     const storeImage = async (file) => {
@@ -141,7 +143,7 @@ const UpdateListing = () => {
             userRef: user._id
         };
         try {
-            const res = await fetch(`/api/listing/update/${params.listingId}`, {
+            const res = await fetch(`${VITE_API_URL}/listing/update/${params.listingId}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(listingData),

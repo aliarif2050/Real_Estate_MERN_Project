@@ -7,6 +7,7 @@ import 'swiper/css/bundle';
 import ListingItem from '../components/ListingItem';
 
 export default function Home() {
+  const VITE_API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
   const [offerListings, setOfferListings] = useState([]);
   const [saleListings, setSaleListings] = useState([]);
   const [rentListings, setRentListings] = useState([]);
@@ -15,7 +16,7 @@ export default function Home() {
   useEffect(() => {
     const fetchOfferListings = async () => {
       try {
-        const res = await fetch('/api/listing/get?offer=true&limit=4');
+        const res = await fetch(`${VITE_API_URL}/listing/get?offer=true&limit=4`);
         const data = await res.json();
         setOfferListings(data.listings || []);
         fetchRentListings();
@@ -25,7 +26,7 @@ export default function Home() {
     };
     const fetchRentListings = async () => {
       try {
-        const res = await fetch('/api/listing/get?type=rent&limit=4');
+        const res = await fetch(`${VITE_API_URL}/listing/get?type=rent&limit=4`);
         const data = await res.json();
         setRentListings(data.listings || []);
         fetchSaleListings();
@@ -36,7 +37,7 @@ export default function Home() {
 
     const fetchSaleListings = async () => {
       try {
-        const res = await fetch('/api/listing/get?type=sale&limit=4');
+        const res = await fetch(`${VITE_API_URL}/listing/get?type=sale&limit=4`);
         const data = await res.json();
         setSaleListings(data.listings || []);
       } catch (error) {
@@ -44,6 +45,7 @@ export default function Home() {
       }
     };
     fetchOfferListings();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

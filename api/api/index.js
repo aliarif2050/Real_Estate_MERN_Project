@@ -1,5 +1,5 @@
 // api/api/index.js - Vercel serverless entry point
-import app from '../server/js';
+import app from '../server.js'
 
 export default async (req, res) => {
   // Enable CORS

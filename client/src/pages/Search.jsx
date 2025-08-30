@@ -5,6 +5,7 @@ import ListingItem from '../components/ListingItem';
 
 
 const Search = () => {
+    const VITE_API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
     const [loading, setLoading] = useState(false);
     const [listings, setListings] = useState([]);
     console.log(listings)
@@ -47,7 +48,7 @@ const Search = () => {
             setShowMore(false);
             try {
                 const searchQuery = urlParams.toString();
-                const response = await fetch(`/api/listing/get?${searchQuery}`);
+                const response = await fetch(`${VITE_API_URL}/listing/get?${searchQuery}`);
                 const data = await response.json();
                 if (data.length > 8) {
                     setShowMore(true);
@@ -64,6 +65,7 @@ const Search = () => {
 
         };
         fetchListings();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [location.search]);
     const handleChange = (e) => {
         if (e.target.id === "all" || e.target.id === "sale" || e.target.id === "rent") {
@@ -121,7 +123,7 @@ const Search = () => {
         const urlParams = new URLSearchParams(location.search);
         urlParams.set('startIndex', startIndex);
         const searchQuery = urlParams.toString();
-        const res = await fetch(`/api/listing/get?${searchQuery}`);
+        const res = await fetch(`${VITE_API_URL}/listing/get?${searchQuery}`);
         const data = await res.json();
         if (data.length < 9) {
             setShowMore(false);

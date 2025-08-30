@@ -6,6 +6,7 @@ import { signInStart,signInFailure,signInSuccess } from '../redux/user/userSlice
 import OAuth from '../components/OAuth'
 
 const Signin = () => {
+  const VITE_API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
   const [formData, setFormData] = React.useState({})
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -18,7 +19,7 @@ const Signin = () => {
     e.preventDefault();
     try {
       dispatch(signInStart())
-      const res = await fetch('/api/auth/signin', {
+      const res = await fetch(`${VITE_API_URL}/auth/signin`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

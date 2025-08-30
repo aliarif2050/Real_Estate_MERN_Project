@@ -9,6 +9,7 @@ import { FaBed, FaMapMarkerAlt, FaBath, FaParking, FaChair , FaShare} from 'reac
 import Contact from '../components/Contact';
 
 const Listing = () => {
+    const VITE_API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
     SwiperCore.use([Navigation])
     const [contact, setContact] = React.useState(false);
     const params = useParams();
@@ -21,7 +22,7 @@ const Listing = () => {
         const fetchListing = async () => {
             try {
                 setLoading(true);
-                const res = await fetch(`/api/listing/get/${params.listingId}`);
+                const res = await fetch(`${VITE_API_URL}/listing/get/${params.listingId}`);
                 const data = await res.json();
                 if (data.success) {
                     setLoading(false);
@@ -38,6 +39,7 @@ const Listing = () => {
 
         }
         fetchListing();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [params.listingId])
     return (
         <main>{loading && <p className='loading text-center my-7 text-gray-500 text-2xl'>Loading...</p>}

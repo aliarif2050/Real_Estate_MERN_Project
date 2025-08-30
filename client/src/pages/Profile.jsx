@@ -8,7 +8,7 @@ const CLOUDINARY_URL = import.meta.env.VITE_CLOUDINARY_URL;
 const UPLOAD_PRESET = import.meta.env.VITE_UPLOAD_PRESET;
 
 const Profile = () => {
-  
+  const VITE_API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
   const { user } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -47,7 +47,7 @@ const Profile = () => {
       if (!cloudData.secure_url) throw new Error("Cloudinary upload failed");
 
       // Update user profile in backend
-      const updateRes = await fetch(`/api/user/${user._id}`, {
+      const updateRes = await fetch(`${VITE_API_URL}/user/${user._id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ photo: cloudData.secure_url }),
@@ -79,7 +79,7 @@ const Profile = () => {
     setLoading(true);
     setError("");
     try {
-      const updateRes = await fetch(`/api/user/${user._id}`, {
+      const updateRes = await fetch(`${VITE_API_URL}/user/${user._id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username: formState.username, password: formState.password }),
@@ -101,7 +101,7 @@ const Profile = () => {
 
   const handleSignOut = async () => {
     try {
-      await fetch('/api/auth/signout', {
+      await fetch(`${VITE_API_URL}/auth/signout`, {
         method: 'POST',
         credentials: 'include'
       });
@@ -116,7 +116,7 @@ const Profile = () => {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch(`/api/user/${user._id}`, {
+      const res = await fetch(`${VITE_API_URL}/user/${user._id}`, {
         method: 'DELETE',
         credentials: 'include', // Ensure cookies (token) are sent
       });
@@ -136,7 +136,7 @@ const Profile = () => {
   const handleShowListings = async () => {
     try {
       setError("");
-      const res = await fetch(`/api/user/listing/${user._id}`, {
+      const res = await fetch(`${VITE_API_URL}/user/listing/${user._id}`, {
         credentials: 'include' // <-- Added to send cookies/token
       });
       const data = await res.json();
@@ -154,7 +154,7 @@ const Profile = () => {
   }
  const handleDeleteListing = async (listingId) => {
   try {
-    const res = await fetch(`/api/listing/${listingId}`, {
+    const res = await fetch(`${VITE_API_URL}/listing/${listingId}`, {
       method: 'DELETE',
       credentials: 'include',
     });
