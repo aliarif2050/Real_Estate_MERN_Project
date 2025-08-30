@@ -7,6 +7,8 @@ import userRouter from './routes/user.route.js';
 import authRouter from './routes/auth.route.js';
 import uploadRoutes from './routes/upload.route.js';
 import listingRoutes from './routes/listing.route.js';
+import { connectToDatabase } from './db.js';
+await connectToDatabase(process.env.MONGO);
 
 dotenv.config();
 const app = express();
