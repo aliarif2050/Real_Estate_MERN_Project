@@ -1,21 +1,23 @@
-// api/api/index.js - Vercel serverless entry point
-import app from '../server.js'
+import app from '../server.js';
 
 export default async (req, res) => {
+  const frontend = process.env.FRONTEND_URL?.replace(/\/$/, '') || 'http://localhost:5173';
+
   // Enable CORS
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', process.env.FRONTEND_URL || 'http://localhost:5173');
+  res.setHeader('Access-Control-Allow-Origin', frontend);
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
   res.setHeader(
     'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+    'Content-Type, Authorization'
   );
-  
+
   // Handle preflight requests
   if (req.method === 'OPTIONS') {
     res.status(200).end();
     return;
   }
-  
+
+  // Delegate to Express app
   return app(req, res);
 };
