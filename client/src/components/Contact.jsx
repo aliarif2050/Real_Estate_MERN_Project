@@ -12,7 +12,9 @@ const Contact = ({ listing }) => {
     React.useEffect(() => {
         const fetchAgent = async () => {
             try {
-                const response = await fetch(`${VITE_API_URL}/user/getUser/${listing.userRef}`);
+                const response = await fetch(`${VITE_API_URL}/user/getUser/${listing.userRef}`, {
+                    credentials: "include", // ✅ add this
+                });
                 const data = await response.json();
                 if (data.success && data.user) {
                     setAgent(data.user);
@@ -22,7 +24,7 @@ const Contact = ({ listing }) => {
             }
         };
         fetchAgent();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [listing.userRef]);
 
     return (
@@ -41,12 +43,14 @@ const Contact = ({ listing }) => {
                         value={message}
                         onChange={onChangeMessage}
                     ></textarea>
-                    <Link
-                        to={`mailto:${agent.email}?subject=Regarding ${listing.name}&body=${message}`}
+                    <a
+                        href={`mailto:${agent.email}?subject=Regarding ${listing.name}&body=${message}`}
                         className='bg-slate-700 text-white text-center p-2 rounded-lg hover:opacity-80 w-full max-w-lg'
+                        target="_blank"
+                        rel="noopener noreferrer"
                     >
                         Send Message
-                    </Link>
+                    </a>
                 </div>
             )}
         </>
